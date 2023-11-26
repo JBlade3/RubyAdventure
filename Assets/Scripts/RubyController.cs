@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
+
 
 public class RubyController : MonoBehaviour
 {
@@ -30,6 +32,14 @@ public class RubyController : MonoBehaviour
 
     AudioSource audioSource;
 
+    public ParticleSystem hitEffect;
+    public ParticleSystem healEffect;
+
+    public UIFixedRobotCount uIFixedRobotCount;
+
+    public GameObject winUI;
+    public GameObject loseUI;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,11 +49,17 @@ public class RubyController : MonoBehaviour
         currentHealth = maxHealth;
 
         audioSource = GetComponent<AudioSource>();
+
+        winUI.SetActive(false);
+        loseUI.SetActive(false);
+
     }
 
     // Update is called once per frame
     void Update()
     {
+        //print(currentHealth);
+
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");
 
@@ -83,6 +99,17 @@ public class RubyController : MonoBehaviour
                 }
             }
         }
+        //Activates win function
+        if ( uIFixedRobotCount.fixedRobotsCount == 4)
+        {
+            Win();
+        }
+
+        //Activates lose function
+        if (currentHealth <= 0)
+        {
+            Lose();
+        }
     }
 
     void FixedUpdate()
@@ -104,8 +131,17 @@ public class RubyController : MonoBehaviour
             isInvincible = true;
             invincibleTimer = timeInvincible;
 
+            
+            hitEffect.Play();
+            
             PlaySound(hitSound);
+            
         }
+        if (amount > 0)
+        {
+            healEffect.Play();
+        }
+
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 
@@ -128,4 +164,31 @@ public class RubyController : MonoBehaviour
     {
         audioSource.PlayOneShot(clip);
     }
+
+    public void Lose()
+    {
+        loseUI.SetActive(true);
+        speed = 0.0f;
+
+        
+
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            resetGame();
+        }
+    }
+
+    public void Win()
+    {
+        winUI.SetActive(true);
+
+       // speed = 0.0f;
+    }
+
+    public void resetGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
 }
+

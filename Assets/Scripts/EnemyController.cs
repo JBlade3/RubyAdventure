@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+
     public float speed;
     public bool vertical;
     public float changeTime = 3.0f;
@@ -16,6 +17,8 @@ public class EnemyController : MonoBehaviour
     bool broken = true;
 
     Animator animator;
+
+    public UIFixedRobotCount uIFixedRobotCount;
 
     // Start is called before the first frame update
     void Start()
@@ -87,5 +90,8 @@ public class EnemyController : MonoBehaviour
         animator.SetTrigger("Fixed");
 
         smokeEffect.Stop();
+
+       uIFixedRobotCount.fixedRobotsCount++;
+       
     }
 }
