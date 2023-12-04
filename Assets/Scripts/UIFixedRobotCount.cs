@@ -20,15 +20,11 @@ public class  UIFixedRobotCount : MonoBehaviour
 
     public EnemyController enemyController;
 
-    /* void Awake()
-     {
-         instance = this;
-     }
-    */
     public void Start()
     {
         text_fixed_robots = textFixedRobots.GetComponent<Text>();
         text_count = textCount.GetComponent<Text>();
+
 
         fixedRobotsCount = 0;
     }

@@ -1,0 +1,4 @@
+repository "Rubys Adventure@thewarriorofblades@cloud"
+  path "/"
+    br "/main"
+    co "/main"

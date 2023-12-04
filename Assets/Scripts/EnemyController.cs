@@ -94,4 +94,6 @@ public class EnemyController : MonoBehaviour
        uIFixedRobotCount.fixedRobotsCount++;
        
     }
+
+
 }

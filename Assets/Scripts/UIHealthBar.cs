@@ -5,17 +5,17 @@ using UnityEngine.UI;
 
 public class UIHealthBar : MonoBehaviour
 {
-    public static UIHealthBar instance { get; private set; }
+    public static UIHealthBar instance { get; set; }
 
     public Image mask;
     float originalSize;
 
-    void Awake()
+    public void Awake()
     {
         instance = this;
     }
 
-    void Start()
+    public void Start()
     {
         originalSize = mask.rectTransform.rect.width;
     }

@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
-
+using System.Runtime.CompilerServices;
 
 public class RubyController : MonoBehaviour
 {
     public float speed = 3.0f;
+
+    public float defaultSpeed = 3.0f;
 
     public int maxHealth = 5;
 
@@ -15,6 +17,8 @@ public class RubyController : MonoBehaviour
 
     public AudioClip throwSound;
     public AudioClip hitSound;
+    public AudioClip npcTalk;
+    public AudioClip winSound;
 
     public int health { get { return currentHealth; } }
     int currentHealth;
@@ -39,6 +43,12 @@ public class RubyController : MonoBehaviour
 
     public GameObject winUI;
     public GameObject loseUI;
+    public GameObject notUI;
+
+    public float bootsTimer;
+    public bool fastBoots;
+
+    public bool collectedBlueStrawb;
 
     // Start is called before the first frame update
     void Start()
@@ -52,6 +62,10 @@ public class RubyController : MonoBehaviour
 
         winUI.SetActive(false);
         loseUI.SetActive(false);
+        notUI.SetActive(true);
+
+        fastBoots = false; 
+        collectedBlueStrawb = false;
 
     }
 
@@ -95,13 +109,16 @@ public class RubyController : MonoBehaviour
                 NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
                 if (character != null)
                 {
+                    PlaySound(npcTalk);
                     character.DisplayDialog();
                 }
             }
         }
         //Activates win function
-        if ( uIFixedRobotCount.fixedRobotsCount == 4)
+        if ( uIFixedRobotCount.fixedRobotsCount == 4 && collectedBlueStrawb == true)
         {
+            //PlaySound(winSound);
+            audioSource.PlayOneShot(winSound);
             Win();
         }
 
@@ -109,6 +126,22 @@ public class RubyController : MonoBehaviour
         if (currentHealth <= 0)
         {
             Lose();
+        }
+
+        if (fastBoots == true)
+        {
+            bootsTimer -= Time.deltaTime;
+        }
+
+        if ( bootsTimer <= 0.1f)
+        {
+            speed = defaultSpeed;
+            fastBoots = false;
+        }
+
+        if(collectedBlueStrawb == true)
+        {
+            notUI.SetActive(false);
         }
     }
 
@@ -119,6 +152,8 @@ public class RubyController : MonoBehaviour
         position.y = position.y + speed * vertical * Time.deltaTime;
 
         rigidbody2d.MovePosition(position);
+
+ 
     }
 
     public void ChangeHealth(int amount)
@@ -145,19 +180,28 @@ public class RubyController : MonoBehaviour
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 
+       // Debug.Log("before calling setvalue");
         UIHealthBar.instance.SetValue(currentHealth / (float)maxHealth);
+       // Debug.Log("after calling setvalue");
     }
 
     void Launch()
     {
-        GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
 
-        Projectile projectile = projectileObject.GetComponent<Projectile>();
-        projectile.Launch(lookDirection, 300);
+            GameObject projectileObject = Instantiate(projectilePrefab, rigidbody2d.position + Vector2.up * 0.5f, Quaternion.identity);
 
-        animator.SetTrigger("Launch");
+            Projectile projectile = projectileObject.GetComponent<Projectile>();
+            projectile.Launch(lookDirection, 300);
+        if( fastBoots == true)
+        {
+            projectile.Launch(lookDirection, 300);
+        }
 
-        PlaySound(throwSound);
+            animator.SetTrigger("Launch");
+
+            PlaySound(throwSound);
+   
+
     }
 
     public void PlaySound(AudioClip clip)
@@ -181,6 +225,7 @@ public class RubyController : MonoBehaviour
     public void Win()
     {
         winUI.SetActive(true);
+        
 
        // speed = 0.0f;
     }
@@ -188,6 +233,14 @@ public class RubyController : MonoBehaviour
     public void resetGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void speedBoots()
+    {
+        fastBoots = true;
+        bootsTimer = 15.0f;
+
+        speed = 6.0f;
     }
 
 }
